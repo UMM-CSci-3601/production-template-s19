@@ -7,7 +7,6 @@ import org.bson.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class UserSummarySpec {
   private UserController userController;
 
   @Before
-  public void clearAndPopulateDB() throws IOException {
+  public void clearAndPopulateDB() {
     MongoClient mongoClient = new MongoClient();
     MongoDatabase db = mongoClient.getDatabase("test");
     MongoCollection<Document> userDocuments = db.getCollection("users");
@@ -29,25 +28,25 @@ public class UserSummarySpec {
       "age: 25,\n" +
       "company: \"Caxt\",\n" +
       "email: \"chris@this.that\"\n" +
-      "                }"));
+      "}"));
     testUsers.add(Document.parse("{\n" +
       "name: \"Pat\",\n" +
       "age: 37,\n" +
       "company: \"Blurrybus\",\n" +
       "email: \"pat@something.com\"\n" +
-      "                }"));
+      "}"));
     testUsers.add(Document.parse("{\n" +
       "name: \"Jamie\",\n" +
       "age: 37,\n" +
       "company: \"Caxt\",\n" +
       "email: \"jamie@frogs.com\"\n" +
-      "                }"));
+      "}"));
     testUsers.add(Document.parse("{\n" +
       "name: \"Diana Wolf\",\n" +
       "age: 44,\n" +
       "company: \"Caxt\",\n" +
       "email: \"undefined.undefined@caxt.us\"\n" +
-      "                }"));
+      "}"));
     testUsers.add(Document.parse("{\n" +
       "name: \"Mia Avila\",\n" +
       "age: 39,\n" +
@@ -123,9 +122,8 @@ public class UserSummarySpec {
 
   private int getSummaryField(BsonValue entry, String fieldName) {
     BsonDocument doc = entry.asDocument();
-    BsonDocument breakdown = ((BsonValue) doc.get("ageBreakdown")).asDocument();
-    int result = ((BsonInt32) breakdown.get(fieldName)).getValue();
-    return result;
+    BsonDocument breakdown = doc.get("ageBreakdown").asDocument();
+    return ((BsonInt32) breakdown.get(fieldName)).getValue();
   }
 
 }
