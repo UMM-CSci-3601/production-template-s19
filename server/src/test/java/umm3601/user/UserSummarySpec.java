@@ -25,65 +25,65 @@ public class UserSummarySpec {
     userDocuments.drop();
     List<Document> testUsers = new ArrayList<>();
     testUsers.add(Document.parse("{\n" +
-      "                    name: \"Chris\",\n" +
-      "                    age: 25,\n" +
-      "                    company: \"Caxt\",\n" +
-      "                    email: \"chris@this.that\"\n" +
+      "name: \"Chris\",\n" +
+      "age: 25,\n" +
+      "company: \"Caxt\",\n" +
+      "email: \"chris@this.that\"\n" +
       "                }"));
     testUsers.add(Document.parse("{\n" +
-      "                    name: \"Pat\",\n" +
-      "                    age: 37,\n" +
-      "                    company: \"Blurrybus\",\n" +
-      "                    email: \"pat@something.com\"\n" +
+      "name: \"Pat\",\n" +
+      "age: 37,\n" +
+      "company: \"Blurrybus\",\n" +
+      "email: \"pat@something.com\"\n" +
       "                }"));
     testUsers.add(Document.parse("{\n" +
-      "                    name: \"Jamie\",\n" +
-      "                    age: 37,\n" +
-      "                    company: \"Caxt\",\n" +
-      "                    email: \"jamie@frogs.com\"\n" +
+      "name: \"Jamie\",\n" +
+      "age: 37,\n" +
+      "company: \"Caxt\",\n" +
+      "email: \"jamie@frogs.com\"\n" +
       "                }"));
     testUsers.add(Document.parse("{\n" +
-      "                    name: \"Diana Wolf\",\n" +
-      "                    age: 44,\n" +
-      "                    company: \"Caxt\",\n" +
-      "                    email: \"undefined.undefined@caxt.us\"\n" +
-				 "                }"));
+      "name: \"Diana Wolf\",\n" +
+      "age: 44,\n" +
+      "company: \"Caxt\",\n" +
+      "email: \"undefined.undefined@caxt.us\"\n" +
+      "                }"));
     testUsers.add(Document.parse("{\n" +
-				 "name: \"Mia Avila\",\n" +
-				 "age: 39,\n" +
-				 "company: \"Caxt\",\n" +
-				 "email: \"undefined.undefined@caxt.io\"\n" +
-				 "}"));
+      "name: \"Mia Avila\",\n" +
+      "age: 39,\n" +
+      "company: \"Caxt\",\n" +
+      "email: \"undefined.undefined@caxt.io\"\n" +
+      "}"));
     testUsers.add(Document.parse("{\n" +
-				 "name: \"Flores Cannon\",\n" +
-				 "age: 31,\n" +
-				 "company: \"Blurrybus\",\n" +
-				 "email: \"undefined.undefined@blurrybus.biz\"\n" +
-				 "}"));
+      "name: \"Flores Cannon\",\n" +
+      "age: 31,\n" +
+      "company: \"Blurrybus\",\n" +
+      "email: \"undefined.undefined@blurrybus.biz\"\n" +
+      "}"));
     testUsers.add(Document.parse("{\n" +
-				 "name: \"Ferrell Lopez\",\n" +
-				 "age: 57,\n" +
-				 "company: \"Eschoir\",\n" +
-				 "email: \"undefined.undefined@eschoir.name\"\n" +
-				 "}"));
+      "name: \"Ferrell Lopez\",\n" +
+      "age: 57,\n" +
+      "company: \"Eschoir\",\n" +
+      "email: \"undefined.undefined@eschoir.name\"\n" +
+      "}"));
     testUsers.add(Document.parse("{\n" +
-				 "name: \"Julia Gutierrez\",\n" +
-				 "age: 51,\n" +
-				 "company: \"Eschoir\",\n" +
-				 "email: \"undefined.undefined@eschoir.me\"\n" +
-				 "}"));
+      "name: \"Julia Gutierrez\",\n" +
+      "age: 51,\n" +
+      "company: \"Eschoir\",\n" +
+      "email: \"undefined.undefined@eschoir.me\"\n" +
+      "}"));
     testUsers.add(Document.parse("{\n" +
-				 "name: \"Lea Baxter\",\n" +
-				 "age: 63,\n" +
-				 "company: \"Blurrybus\",\n" +
-				 "email: \"undefined.undefined@blurrybus.tv\"\n" +
-				 "}"));
+      "name: \"Lea Baxter\",\n" +
+      "age: 63,\n" +
+      "company: \"Blurrybus\",\n" +
+      "email: \"undefined.undefined@blurrybus.tv\"\n" +
+      "}"));
     testUsers.add(Document.parse("{\n" +
-				 "name: \"Bianca Walls\",\n" +
-				 "age: 29,\n" +
-				 "company: \"Caxt\",\n" +
-				 "email: \"undefined.undefined@caxt.biz\"\n" +
-				 "}"));
+      "name: \"Bianca Walls\",\n" +
+      "age: 29,\n" +
+      "company: \"Caxt\",\n" +
+      "email: \"undefined.undefined@caxt.biz\"\n" +
+      "}"));
 
     userDocuments.insertMany(testUsers);
 
