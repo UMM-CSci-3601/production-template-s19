@@ -5,10 +5,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.*;
-import org.bson.codecs.*;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.json.JsonReader;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,20 +67,6 @@ public class UserControllerSpec {
     userController = new UserController(db);
   }
 
-  // http://stackoverflow.com/questions/34436952/json-parse-equivalent-in-mongo-driver-3-x-for-java
-  private BsonArray parseJsonArray(String json) {
-    final CodecRegistry codecRegistry
-      = CodecRegistries.fromProviders(Arrays.asList(
-      new ValueCodecProvider(),
-      new BsonValueCodecProvider(),
-      new DocumentCodecProvider()));
-
-    JsonReader reader = new JsonReader(json);
-    BsonArrayCodec arrayReader = new BsonArrayCodec(codecRegistry);
-
-    return arrayReader.decode(reader, DecoderContext.builder().build());
-  }
-
   private static String getName(BsonValue val) {
     BsonDocument doc = val.asDocument();
     return ((BsonString) doc.get("name")).getValue();
@@ -94,7 +76,7 @@ public class UserControllerSpec {
   public void getAllUsers() {
     Map<String, String[]> emptyMap = new HashMap<>();
     String jsonResult = userController.getUsers(emptyMap);
-    BsonArray docs = parseJsonArray(jsonResult);
+    BsonArray docs = Util.parseJsonArray(jsonResult);
 
     assertEquals("Should be 4 users", 4, docs.size());
     List<String> names = docs
@@ -111,7 +93,7 @@ public class UserControllerSpec {
     Map<String, String[]> argMap = new HashMap<>();
     argMap.put("age", new String[]{"37"});
     String jsonResult = userController.getUsers(argMap);
-    BsonArray docs = parseJsonArray(jsonResult);
+    BsonArray docs = Util.parseJsonArray(jsonResult);
 
     assertEquals("Should be 2 users", 2, docs.size());
     List<String> names = docs
@@ -141,7 +123,7 @@ public class UserControllerSpec {
     Map<String, String[]> argMap = new HashMap<>();
     argMap.put("age", new String[]{"22"});
     String jsonResult = userController.getUsers(argMap);
-    BsonArray docs = parseJsonArray(jsonResult);
+    BsonArray docs = Util.parseJsonArray(jsonResult);
 
     List<String> name = docs
       .stream()
@@ -158,7 +140,7 @@ public class UserControllerSpec {
     //This will search the company starting with an I or an F
     argMap.put("company", new String[]{"[I,F]"});
     String jsonResult = userController.getUsers(argMap);
-    BsonArray docs = parseJsonArray(jsonResult);
+    BsonArray docs = Util.parseJsonArray(jsonResult);
     assertEquals("Should be 3 users", 3, docs.size());
     List<String> name = docs
       .stream()

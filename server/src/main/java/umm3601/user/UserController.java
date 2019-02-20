@@ -90,6 +90,9 @@ public class UserController {
     return JSON.serialize(matchingUsers);
   }
 
+  public String getUserSummary() {
+    return "[ { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } } ]";
+  }
 
   /**
    * Helper method which appends received user information to the to-be added document

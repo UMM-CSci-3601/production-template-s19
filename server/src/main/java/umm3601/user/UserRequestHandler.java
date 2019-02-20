@@ -106,4 +106,8 @@ public class UserRequestHandler {
       return null;
     }
   }
+
+  public String getUserSummary(Request request, Response response) {
+    return null;
+  }
 }
