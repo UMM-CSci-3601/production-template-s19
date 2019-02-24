@@ -22,6 +22,23 @@ public class UserSummarySpec {
     MongoDatabase db = mongoClient.getDatabase("test");
     MongoCollection<Document> userDocuments = db.getCollection("users");
     userDocuments.drop();
+
+    List<Document> testUsers = generateTestUsers();
+    userDocuments.insertMany(testUsers);
+
+    // It might be important to construct this _after_ the DB is set up
+    // in case there are bits in the constructor that care about the state
+    // of the database.
+    userController = new UserController(db);
+  }
+
+  /**
+   * Generate a bunch of test users so we know what to expect
+   * in these tests.
+   *
+   * @return a list of test users
+   */
+  private List<Document> generateTestUsers() {
     List<Document> testUsers = new ArrayList<>();
     testUsers.add(Document.parse("{\n" +
       "name: \"Chris\",\n" +
@@ -89,13 +106,7 @@ public class UserSummarySpec {
       "company: \"Caxt\",\n" +
       "email: \"undefined.undefined@caxt.biz\"\n" +
       "}"));
-
-    userDocuments.insertMany(testUsers);
-
-    // It might be important to construct this _after_ the DB is set up
-    // in case there are bits in the constructor that care about the state
-    // of the database.
-    userController = new UserController(db);
+    return testUsers;
   }
 
   @Test
@@ -119,6 +130,8 @@ public class UserSummarySpec {
   private int getSummaryField(BsonValue entry, String fieldName) {
     BsonDocument doc = entry.asDocument();
     final BsonValue bsonValue = doc.get(fieldName);
+    // If `bsonValue` is null, then there wasn't an entry for that field
+    // so we want to use zero as the default.
     if (bsonValue == null) {
       return 0;
     } else {
