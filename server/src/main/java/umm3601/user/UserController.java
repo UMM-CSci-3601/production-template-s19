@@ -99,7 +99,7 @@ public class UserController {
       "    emit({ company: this.company, \n" +
       "           ageBracket: (this.age<30?\"under30\":((this.age<=55)?\"between30and55\":\"over55\")) }, \n" +
       "         1); \n" +
-      "};";
+      "}";
     String reduceFunction = "function(k, vs) { return Array.sum(vs) }";
 
     MapReduceIterable<Document> mapReduceResults = userCollection.mapReduce(mapFunction, reduceFunction);
