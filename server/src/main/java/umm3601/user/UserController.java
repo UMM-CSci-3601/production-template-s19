@@ -5,13 +5,14 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MapReduceIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.util.JSON;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -84,7 +85,11 @@ public class UserController {
     //FindIterable comes from mongo, Document comes from Gson
     FindIterable<Document> matchingUsers = userCollection.find(filterDoc);
 
-    return JSON.serialize(matchingUsers);
+    // Got this nifty trick for turning our iterator into a JSON array from
+    // https://stackoverflow.com/a/52198430
+    return StreamSupport.stream(matchingUsers.spliterator(), false)
+      .map(Document::toJson)
+      .collect(Collectors.joining(", ", "[", "]"));
   }
 
   public String getUserSummary() {
@@ -135,7 +140,7 @@ public class UserController {
       userCollection.insertOne(newUser);
       ObjectId id = newUser.getObjectId("_id");
       System.err.println("Successfully added new user [_id=" + id + ", name=" + name + ", age=" + age + " company=" + company + " email=" + email + ']');
-      return JSON.serialize(id);
+      return id.toHexString();
     } catch (MongoException me) {
       me.printStackTrace();
       return null;

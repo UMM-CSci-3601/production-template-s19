@@ -68,15 +68,14 @@ public class UserRequestHandler {
   /**
    * Method called from Server when the 'api/users/new'endpoint is recieved.
    * Gets specified user info from request and calls addNewUser helper method
-   * to append that info to a document
+   * to add user to the database.
    *
    * @param req the HTTP request
    * @param res the HTTP response
-   * @return a boolean as whether the user was added successfully or not
+   * @return the ID of the newly added user
    */
   public String addNewUser(Request req, Response res) {
-
-    res.type("application/json");
+    res.type("text");
     Object o = JSON.parse(req.body());
     try {
       if (o.getClass().equals(BasicDBObject.class)) {
@@ -96,7 +95,6 @@ public class UserRequestHandler {
           System.err.println("A value was malformed or omitted, new user request failed.");
           return null;
         }
-
       } else {
         System.err.println("Expected BasicDBObject, received " + o.getClass());
         return null;

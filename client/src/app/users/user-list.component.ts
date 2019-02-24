@@ -45,13 +45,13 @@ export class UserListComponent implements OnInit {
       if (newUser != null) {
         this.userListService.addNewUser(newUser).subscribe(
           result => {
-            this.highlightedID = result;
+            this.highlightedID = { '$oid': result };
             this.refreshUsers();
           },
           err => {
             // This should probably be turned into some sort of meaningful response.
             console.log('There was an error adding the user.');
-            console.log('The newUser or dialogResult was ' + newUser);
+            console.log('The newUser or dialogResult was ' + JSON.stringify(newUser));
             console.log('The error was ' + JSON.stringify(err));
           });
       }
