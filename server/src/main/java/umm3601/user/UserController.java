@@ -1,11 +1,12 @@
 package umm3601.user;
 
-import com.google.gson.Gson;
-import com.mongodb.*;
+import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MapReduceIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -19,8 +20,6 @@ import static com.mongodb.client.model.Filters.eq;
  */
 public class UserController {
 
-  private final Gson gson;
-  private MongoDatabase database;
   private final MongoCollection<Document> userCollection;
 
   /**
@@ -29,8 +28,6 @@ public class UserController {
    * @param database the database containing user data
    */
   public UserController(MongoDatabase database) {
-    gson = new Gson();
-    this.database = database;
     userCollection = database.getCollection("users");
   }
 
@@ -64,7 +61,7 @@ public class UserController {
    * is specified, then the collection is filtered so only documents of that
    * specified age are found.
    *
-   * @param queryParams
+   * @param queryParams the query parameters provided in the URL of this request
    * @return an array of Users in a JSON formatted string
    */
   public String getUsers(Map<String, String[]> queryParams) {
@@ -91,16 +88,39 @@ public class UserController {
   }
 
   public String getUserSummary() {
-    return "[ { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } }, { company: 'IBM', ageBreakdown: { numUnder30: 3, between30and55: 7, over55: 2 } } ]";
+
+    String mapFunction
+      = "function() { \n" +
+      "    emit({ company: this.company, \n" +
+      "           ageBracket: (this.age<30?\"under30\":((this.age<=55)?\"between30and55\":\"over55\")) }, \n" +
+      "         1); \n" +
+      "};";
+    String reduceFunction = "function(k, vs) { return Array.sum(vs) }";
+
+    MapReduceIterable<Document> mapReduceResults = userCollection.mapReduce(mapFunction, reduceFunction);
+
+    return buildUserSummaryResult(mapReduceResults);
+  }
+
+  private String buildUserSummaryResult(MapReduceIterable<Document> mapReduceResults) {
+    UserSummaryResult result = new UserSummaryResult();
+
+    for (Document entry : mapReduceResults) {
+      result.addEntry(entry);
+    }
+
+    BsonDocument resultDocument = result.getFinalDocument();
+
+    return resultDocument.toJson();
   }
 
   /**
    * Helper method which appends received user information to the to-be added document
    *
-   * @param name
-   * @param age
-   * @param company
-   * @param email
+   * @param name    the name of this user
+   * @param age     the user's age
+   * @param company the company the user works for
+   * @param email   the user's email
    * @return boolean after successfully or unsuccessfully adding a user
    */
   public String addNewUser(String name, int age, String company, String email) {
@@ -115,7 +135,6 @@ public class UserController {
       userCollection.insertOne(newUser);
       ObjectId id = newUser.getObjectId("_id");
       System.err.println("Successfully added new user [_id=" + id + ", name=" + name + ", age=" + age + " company=" + company + " email=" + email + ']');
-      // return JSON.serialize(newUser);
       return JSON.serialize(id);
     } catch (MongoException me) {
       me.printStackTrace();

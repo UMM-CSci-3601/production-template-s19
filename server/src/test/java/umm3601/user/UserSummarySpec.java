@@ -66,6 +66,12 @@ public class UserSummarySpec {
       "email: \"undefined.undefined@eschoir.name\"\n" +
       "}"));
     testUsers.add(Document.parse("{\n" +
+      "name: \"Pat Smith\",\n" +
+      "age: 27,\n" +
+      "company: \"Eschoir\",\n" +
+      "email: \"undefined.undefined@eschoir.name\"\n" +
+      "}"));
+    testUsers.add(Document.parse("{\n" +
       "name: \"Julia Gutierrez\",\n" +
       "age: 51,\n" +
       "company: \"Eschoir\",\n" +
@@ -95,35 +101,29 @@ public class UserSummarySpec {
   @Test
   public void checkSummary() {
     String jsonResult = userController.getUserSummary();
-    System.err.println(jsonResult);
-    BsonArray docs = Util.parseJsonArray(jsonResult);
+    BsonDocument doc = BsonDocument.parse(jsonResult);
 
-    assertEquals("Incorrect number of summaries", 6, docs.size());
+    assertEquals("Incorrect number of summaries", 3, doc.size());
 
-    checkCompanySummary(docs.get(0), "IBM", 3, 7, 2);
-    checkCompanySummary(docs.get(1), "IBM", 3, 7, 2);
-    checkCompanySummary(docs.get(2), "IBM", 3, 7, 2);
-    checkCompanySummary(docs.get(3), "IBM", 3, 7, 2);
-    checkCompanySummary(docs.get(4), "IBM", 3, 7, 2);
-    checkCompanySummary(docs.get(5), "IBM", 3, 7, 2);
+    checkCompanySummary(doc.get("Blurrybus"), 0, 2, 1);
+    checkCompanySummary(doc.get("Caxt"), 2, 3, 0);
+    checkCompanySummary(doc.get("Eschoir"), 1, 1, 1);
   }
 
-  private void checkCompanySummary(BsonValue entry, String companyName, int numUnder30, int between30and55, int over55) {
-    assertEquals("Incorrect company", companyName, getCompany(entry));
-    assertEquals("Incorrect under 30", numUnder30, getSummaryField(entry, "numUnder30"));
+  private void checkCompanySummary(BsonValue entry, int numUnder30, int between30and55, int over55) {
+    assertEquals("Incorrect under 30", numUnder30, getSummaryField(entry, "under30"));
     assertEquals("Incorrect between 30 and 55", between30and55, getSummaryField(entry, "between30and55"));
     assertEquals("Incorrect over 55", over55, getSummaryField(entry, "over55"));
   }
 
-  private static String getCompany(BsonValue entry) {
-    BsonDocument doc = entry.asDocument();
-    return ((BsonString) doc.get("company")).getValue();
-  }
-
   private int getSummaryField(BsonValue entry, String fieldName) {
     BsonDocument doc = entry.asDocument();
-    BsonDocument breakdown = doc.get("ageBreakdown").asDocument();
-    return ((BsonInt32) breakdown.get(fieldName)).getValue();
+    final BsonValue bsonValue = doc.get(fieldName);
+    if (bsonValue == null) {
+      return 0;
+    } else {
+      return bsonValue.asDouble().intValue();
+    }
   }
 
 }
