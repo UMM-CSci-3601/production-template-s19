@@ -1,8 +1,6 @@
 package umm3601.user;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import org.bson.types.ObjectId;
 import spark.Request;
 import spark.Response;
 
@@ -49,7 +47,6 @@ public class UserRequestHandler {
     }
   }
 
-
   /**
    * Method called from Server when the 'api/users' endpoint is received.
    * This handles the request received and the response
@@ -64,7 +61,6 @@ public class UserRequestHandler {
     return userController.getUsers(req.queryMap().toMap());
   }
 
-
   /**
    * Method called from Server when the 'api/users/new'endpoint is recieved.
    * Gets specified user info from request and calls addNewUser helper method
@@ -75,34 +71,20 @@ public class UserRequestHandler {
    * @return the ID of the newly added user
    */
   public String addNewUser(Request req, Response res) {
+    // We're just returning unstructured text (the ID of the newly added user)
+    // instead of structured JSON.
     res.type("text");
-    Object o = JSON.parse(req.body());
-    try {
-      if (o.getClass().equals(BasicDBObject.class)) {
-        try {
-          BasicDBObject dbO = (BasicDBObject) o;
 
-          String name = dbO.getString("name");
-          //For some reason age is a string right now, caused by angular.
-          //This is a problem and should not be this way but here ya go
-          int age = dbO.getInt("age");
-          String company = dbO.getString("company");
-          String email = dbO.getString("email");
+    // Parse the JSON text that forms the body of the request
+    BasicDBObject userInfo = BasicDBObject.parse(req.body());
 
-          System.err.println("Adding new user [name=" + name + ", age=" + age + " company=" + company + " email=" + email + ']');
-          return userController.addNewUser(name, age, company, email).toString();
-        } catch (NullPointerException e) {
-          System.err.println("A value was malformed or omitted, new user request failed.");
-          return null;
-        }
-      } else {
-        System.err.println("Expected BasicDBObject, received " + o.getClass());
-        return null;
-      }
-    } catch (RuntimeException ree) {
-      ree.printStackTrace();
-      return null;
-    }
+    String name = userInfo.getString("name");
+    int age = userInfo.getInt("age");
+    String company = userInfo.getString("company");
+    String email = userInfo.getString("email");
+
+    System.err.println("Adding new user [name=" + name + ", age=" + age + " company=" + company + " email=" + email + ']');
+    return userController.addNewUser(name, age, company, email);
   }
 
   public String getUserSummary(Request request, Response response) {
