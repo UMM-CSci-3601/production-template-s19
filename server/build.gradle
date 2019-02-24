@@ -21,6 +21,11 @@ dependencies {
 }
 
 //Only server tests
+test {
+  testLogging {
+    exceptionFormat = 'full'
+  }
+}
 task runServerTests {
   group = "application"
 }
