@@ -4,13 +4,10 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 import umm3601.user.UserController;
 import umm3601.user.UserRequestHandler;
 
-import java.io.IOException;
-
-
-import static spark.Spark.*;
 import static spark.debug.DebugScreen.enableDebugScreen;
 
 public class Server {
@@ -25,13 +22,13 @@ public class Server {
   }
 
   private static void configureSpark() {
-    port(SERVER_PORT);
+    Spark.port(SERVER_PORT);
     enableDebugScreen();
 
     // Specify where assets like images will be "stored"
-    staticFiles.location("/public");
+    Spark.staticFiles.location("/public");
 
-    options("/*", (request, response) -> {
+    Spark.options("/*", (request, response) -> {
       String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
       if (accessControlRequestHeaders != null) {
         response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
@@ -47,7 +44,7 @@ public class Server {
 
     // Call before each request. This is necessary for the Angular code to be
     // able to make requests of the server.
-    before((request, response)
+    Spark.before((request, response)
       -> response.header("Access-Control-Allow-Origin", "*"));
 
     // Called after each request to insert the GZIP header into the response.
@@ -55,7 +52,7 @@ public class Server {
     // in their request that they can accept compressed responses.
     // There's a similar "before" method that can be used to modify requests
     // before they they're processed by things like `get`.
-    after("*", Server::addGzipHeader);
+    Spark.after("*", Server::addGzipHeader);
   }
 
   // Enable GZIP for all responses
@@ -64,10 +61,10 @@ public class Server {
   }
 
   private static void defineRedirects() {
-    redirect.get("", "/");
+    Spark.redirect.get("", "/");
     // This redirects attempts to talk to the server without and `api/...` URL
     // back to Angular.
-    redirect.get("/", "http://localhost:9000");
+    Spark.redirect.get("/", "http://localhost:9000");
   }
 
   /*
@@ -76,12 +73,12 @@ public class Server {
    */
   private static void defineDemoRoutes() {
     // Simple example route
-    get("/hello", (req, res) -> "Hello World");
+    Spark.get("/hello", (req, res) -> "Hello World");
 
     // An example of throwing an unhandled exception so you can see how the
     // Java Spark debugger displays errors like this. You want to remove
     // this from your code.
-    get("api/error", (req, res) -> {
+    Spark.get("api/error", (req, res) -> {
       throw new RuntimeException("A demonstration error");
     });
   }
@@ -93,7 +90,7 @@ public class Server {
     defineUserRoutes(database);
 
     // Handle "404" file not found requests:
-    notFound((req, res) -> {
+    Spark.notFound((req, res) -> {
       res.type("text");
       res.status(404);
       return "Sorry, we couldn't find that!";
@@ -104,9 +101,9 @@ public class Server {
     UserController userController = new UserController(database);
     UserRequestHandler userRequestHandler = new UserRequestHandler(userController);
 
-    get("api/users", userRequestHandler::getUsers);
-    get("api/users/:id", userRequestHandler::getUserJSON);
-    get("api/userSummary", userRequestHandler::getUserSummary);
-    post("api/users/new", userRequestHandler::addNewUser);
+    Spark.get("api/users", userRequestHandler::getUsers);
+    Spark.get("api/users/:id", userRequestHandler::getUserJSON);
+    Spark.get("api/userSummary", userRequestHandler::getUserSummary);
+    Spark.post("api/users/new", userRequestHandler::addNewUser);
   }
 }
