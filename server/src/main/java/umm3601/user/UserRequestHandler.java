@@ -108,6 +108,7 @@ public class UserRequestHandler {
   }
 
   public String getUserSummary(Request request, Response response) {
-    return null;
+    response.type("application/json");
+    return userController.getUserSummary();
   }
 }
