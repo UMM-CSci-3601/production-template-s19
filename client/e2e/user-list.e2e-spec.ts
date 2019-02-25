@@ -1,6 +1,5 @@
 import {UserPage} from './user-list.po';
-import {browser, protractor, element, by} from 'protractor';
-import {Key} from 'selenium-webdriver';
+import {browser, protractor, element, by } from 'protractor';
 
 // This line (combined with the function that follows) is here for us
 // to be able to see what happens (part of slowing things down)
@@ -16,7 +15,7 @@ browser.driver.controlFlow().execute = function () {
     // If you're tired of it taking long you can remove this call or change the delay
     // to something smaller (even 0).
     origFn.call(browser.driver.controlFlow(), () => {
-        return protractor.promise.delayed(100);
+        return protractor.promise.delayed(10);
     });
 
     return origFn.apply(browser.driver.controlFlow(), args);
@@ -38,74 +37,114 @@ describe('User list', () => {
   it('should type something in filter name box and check that it returned correct element', () => {
     page.navigateTo();
     page.typeAName('t');
-    expect(page.getUniqueUser('kittypage@surelogic.com')).toEqual('Kitty Page');
+    expect(page.getUniqueUser('pate.howell@velity.name')).toEqual('Pate Howell');
     page.backspace();
-    page.typeAName('lynn');
-    expect(page.getUniqueUser('lynnferguson@niquent.com')).toEqual('Lynn Ferguson');
+    page.typeAName('ramsey');
+    expect(page.getUniqueUser('ramsey.page@velity.name')).toEqual('Ramsey Page');
   });
 
-  it('should click on the age 27 times and return 3 elements then ', () => {
+  it('should allow us to filter based on age', () => {
     page.navigateTo();
+
+    let initialNumberOfUsers = page.numUsers();
+
     page.getUserByAge();
     for (let i = 0; i < 27; i++) {
       page.selectUpKey();
     }
 
-    expect(page.getUniqueUser('stokesclayton@momentia.com')).toEqual('Stokes Clayton');
+    let filteredNumberOfUsers = page.numUsers();
 
-    expect(page.getUniqueUser('merrillparker@escenta.com')).toEqual('Merrill Parker');
-  });
+    initialNumberOfUsers.then((initNumUsers) => {
+      filteredNumberOfUsers.then((filteredNum) => {
+        expect(initNumUsers).toBeGreaterThan(filteredNum);
+      })
+    });
 
-  it('Should open the expansion panel and get the company', () => {
-    page.navigateTo();
-    page.getCompany('DATA');
-    browser.actions().sendKeys(Key.ENTER).perform();
-
-    expect(page.getUniqueUser('valerieerickson@datagene.com')).toEqual('Valerie Erickson');
-
-    // This is just to show that the panels can be opened
-    browser.actions().sendKeys(Key.TAB).perform();
-    browser.actions().sendKeys(Key.ENTER).perform();
+    page.getAges().map((element) => {
+      // Spent *forever* trying to figure out how to get the value of the age field.
+      // Ultimately https://stackoverflow.com/a/46545517/2557372 showed us that
+      // we needed to get the 'textContent' attribute.
+      return element.getAttribute('textContent').then(a => parseInt(a));
+    }).then(ages => {
+      ages.forEach(age => {
+        expect(age).toBe(27);
+      })
+    });
   });
 
   it('Should allow us to filter users based on company', () => {
     page.navigateTo();
-    page.getCompany('o');
-    page.getUsers().then((users) => {
-      expect(users.length).toBe(4);
+    page.getCompany('oi');
+
+    page.getCompanies().map((element) => {
+      // Spent *forever* trying to figure out how to get the value of the age field.
+      // Ultimately https://stackoverflow.com/a/46545517/2557372 showed us that
+      // we needed to get the 'textContent' attribute.
+      return element.getAttribute('textContent');
+    }).then(companies=> {
+      companies.forEach((company : string) => {
+        expect(company.toLowerCase()).toContain('oi');
+      })
     });
-    expect(page.getUniqueUser('conniestewart@ohmnet.com')).toEqual('Connie Stewart');
-    expect(page.getUniqueUser('stokesclayton@momentia.com')).toEqual('Stokes Clayton');
-    expect(page.getUniqueUser('kittypage@surelogic.com')).toEqual('Kitty Page');
-    expect(page.getUniqueUser('margueritenorton@recognia.com')).toEqual('Marguerite Norton');
   });
 
   it('Should allow us to clear a search for company and then still successfully search again', () => {
     page.navigateTo();
-    page.getCompany('m');
-    page.getUsers().then((users) => {
-      expect(users.length).toBe(2);
+
+    let initialNumberOfUsers = page.numUsers();
+
+    page.getCompany('v');
+    page.getCompanies().map((element) => {
+      return element.getAttribute('textContent');
+    }).then(companies=> {
+      companies.forEach((company : string) => {
+        expect(company.toLowerCase()).toContain('v');
+      })
     });
     page.click('companyClearSearch');
-    page.getUsers().then((users) => {
-      expect(users.length).toBe(10);
+
+    let numUsersAfterClear = page.numUsers();
+
+    initialNumberOfUsers.then(initNumUsers => {
+      numUsersAfterClear.then( numAfter => {
+        expect(numAfter).toBe(initNumUsers);
+      })
     });
-    page.getCompany('ne');
-    page.getUsers().then((users) => {
-      expect(users.length).toBe(3);
+
+    page.getCompany('n');
+    page.getCompanies().map((element) => {
+      return element.getAttribute('textContent');
+    }).then(companies=> {
+      companies.forEach((company : string) => {
+        expect(company.toLowerCase()).toContain('n');
+      })
     });
   });
 
   it('Should allow us to search for company, update that search string, and then still successfully search', () => {
     page.navigateTo();
     page.getCompany('o');
-    page.getUsers().then((users) => {
-      expect(users.length).toBe(4);
-    });
-    page.field('userCompany').sendKeys('h');
+
+    let numUsersAfterO = page.numUsers();
+
+    page.field('userCompany').sendKeys('v');
     page.click('submit');
-    page.getUsers().then((users) => {
-      expect(users.length).toBe(1);
+
+    let numUsersAfterOV = page.numUsers();
+
+    numUsersAfterO.then( numAfterO => {
+      numUsersAfterOV.then( numAfterOV => {
+        expect(numAfterOV).toBeLessThan(numAfterO);
+      })
+    });
+
+    page.getCompanies().map((element) => {
+      return element.getAttribute('textContent');
+    }).then(companies=> {
+      companies.forEach((company : string) => {
+        expect(company.toLowerCase()).toContain('ov');
+      })
     });
   });
 

@@ -35,10 +35,10 @@
                                *ngFor="let user of this.filterUsers(userName, userAge)">
             <mat-expansion-panel-header>
               <mat-panel-title matTooltip="email: {{user.email}}">{{user.name}}</mat-panel-title>
-
             </mat-expansion-panel-header>
-            <mat-panel-description>Works for {{user.company}}</mat-panel-description>
-            <mat-panel-description>Age: {{user.age}} years old</mat-panel-description>
+
+            <mat-panel-description><p>Works for <span class="company-display">{{user.company}}</span></p></mat-panel-description>
+            <mat-panel-description><p>Age: <span class="age-display">{{user.age}}</span> years old</p></mat-panel-description>
           </mat-expansion-panel>
         </mat-accordion>
         <!-- Maybe this should be a pop-up instead of just a text message? Not sure. -->

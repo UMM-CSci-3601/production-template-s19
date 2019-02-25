@@ -1,4 +1,4 @@
-import {browser, element, by, promise, ElementFinder} from 'protractor';
+import {browser, element, by, promise, ElementArrayFinder} from 'protractor';
 import {Key} from 'selenium-webdriver';
 
 export class UserPage {
@@ -61,8 +61,22 @@ export class UserPage {
     return user;
   }
 
-  getUsers() {
+  getUsers() : ElementArrayFinder {
     return element.all(by.className('users'));
+  }
+
+  getAges() : ElementArrayFinder {
+    return element.all(by.className('age-display'));
+  }
+
+  getCompanies() : ElementArrayFinder {
+    return element.all(by.className('company-display'));
+  }
+
+  numUsers() : promise.Promise<number> {
+    return this.getUsers().then((users) => {
+      return users.length;
+    });
   }
 
   elementExistsWithId(idOfElement: string): promise.Promise<boolean> {
