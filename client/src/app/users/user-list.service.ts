@@ -80,7 +80,7 @@ export class UserListService {
     const httpOptions = {
       headers: new HttpHeaders({
         // We're sending JSON
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       }),
       // But we're getting a simple (text) string in response
       // The server sends the hex version of the new user back

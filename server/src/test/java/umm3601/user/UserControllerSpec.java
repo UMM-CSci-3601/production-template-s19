@@ -9,7 +9,6 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class UserControllerSpec {
   private ObjectId samsId;
 
   @Before
-  public void clearAndPopulateDB() throws IOException {
+  public void clearAndPopulateDB() {
     MongoClient mongoClient = new MongoClient();
     MongoDatabase db = mongoClient.getDatabase("test");
     MongoCollection<Document> userDocuments = db.getCollection("users");

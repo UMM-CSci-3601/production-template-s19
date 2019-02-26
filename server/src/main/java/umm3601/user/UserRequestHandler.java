@@ -1,6 +1,6 @@
 package umm3601.user;
 
-import com.mongodb.BasicDBObject;
+import org.bson.Document;
 import spark.Request;
 import spark.Response;
 
@@ -62,7 +62,7 @@ public class UserRequestHandler {
   }
 
   /**
-   * Method called from Server when the 'api/users/new'endpoint is recieved.
+   * Method called from Server when the 'api/users/new' endpoint is received.
    * Gets specified user info from request and calls addNewUser helper method
    * to add user to the database.
    *
@@ -74,15 +74,15 @@ public class UserRequestHandler {
     // We're just returning unstructured text (the ID of the newly added user)
     // instead of structured JSON.
     res.type("text");
+    Document newUser = Document.parse(req.body());
 
-    // Parse the JSON text that forms the body of the request
-    BasicDBObject userInfo = BasicDBObject.parse(req.body());
+    String name = newUser.getString("name");
+    int age = newUser.getInteger("age");
+    String company = newUser.getString("company");
+    String email = newUser.getString("email");
 
-    String name = userInfo.getString("name");
-    int age = userInfo.getInt("age");
-    String company = userInfo.getString("company");
-    String email = userInfo.getString("email");
-
+    System.err.println("Adding new user [name=" + name + ", age=" + age + " company=" + company + " email=" + email + ']');
+    return userController.addNewUser(name, age, company, email);
     System.err.println("Adding new user [name=" + name + ", age=" + age + " company=" + company + " email=" + email + ']');
     return userController.addNewUser(name, age, company, email);
   }

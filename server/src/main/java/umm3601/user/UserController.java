@@ -85,9 +85,19 @@ public class UserController {
     //FindIterable comes from mongo, Document comes from Gson
     FindIterable<Document> matchingUsers = userCollection.find(filterDoc);
 
-    // Got this nifty trick for turning our iterator into a JSON array from
-    // https://stackoverflow.com/a/52198430
-    return StreamSupport.stream(matchingUsers.spliterator(), false)
+    return serializeIterable(matchingUsers);
+  }
+
+  /*
+   * Take an iterable collection of documents, turn each into JSON string
+   * using `document.toJson`, and then join those strings into a single
+   * string representing an array of JSON objects.
+   *
+   * Got this nifty trick for turning our iterator into a JSON array from
+   * https://stackoverflow.com/a/52198430
+   */
+  private String serializeIterable(Iterable<Document> documents) {
+    return StreamSupport.stream(documents.spliterator(), false)
       .map(Document::toJson)
       .collect(Collectors.joining(", ", "[", "]"));
   }
