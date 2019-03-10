@@ -53,4 +53,4 @@ Everyone in your team will want to merge those changes into whatever working bra
 
 :smile: :grin: :smile:
 
-Now you can go to the [droplet setup instructions](./README.me) and get your droplet up and running!
+Now you can go to the [droplet setup instructions](https://github.com/UMM-CSci-3601/droplet-setup-and-build) and get your droplet up and running!
