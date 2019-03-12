@@ -12,6 +12,8 @@ You're going to want to merge changes (commits) from our repository into yours, 
       * Give it whatever name you want (that's just a label so you can find it later). I'm going to use `starter-code` as the name down below.
       * Enter our repo's URL: https://github.com/UMM-CSci-3601/production-template-s19.git
    * Click `OK`
+   * Go to `VCS -> Git -> Fetch`
+      * This ensures that `git` knows about all the branches on that remote so they'll be visible in the merge step below.
 
 ## Decide where/how you're going to merge
 
